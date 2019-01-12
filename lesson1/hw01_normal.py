@@ -28,28 +28,28 @@ __author__ = 'Шастин Павел'
 
 #Задача 1
 
-# numStr = str(input("Введите целое число: "))
-#
-# maxNum = 0
-# for num in numStr:
-#     num = int(num)
-#     if num > maxNum:
-#         maxNum = num
-#
-# print(maxNum)
+numStr = str(input("Введите целое число: "))
+
+maxNum = 0
+for num in numStr:
+    num = int(num)
+    if num > maxNum:
+        maxNum = num
+
+print(maxNum)
 
 #Задача 2
 
-# firstNum = int(input("Ввведите первое число: "))
-# secondNum = int(input("Ввведите второе число: "))
-#
-# interNum = firstNum
-# firstNum = secondNum
-# secondNum = interNum
-# print(firstNum, secondNum)
+firstNum = int(input("Ввведите первое число: "))
+secondNum = int(input("Ввведите второе число: "))
 
-# tupleInit = tuple(input("Введите два числа через пробел: ").split())
-# print(" ".join(tupleInit[-1:] + tupleInit[:1]))
+interNum = firstNum
+firstNum = secondNum
+secondNum = interNum
+print(firstNum, secondNum)
+
+tupleInit = tuple(input("Введите два числа через пробел: ").split())
+print(" ".join(tupleInit[-1:] + tupleInit[:1]))
 
 
 #Задача 3
@@ -58,7 +58,7 @@ a = 0
 
 while a < 5:
     a, b, c = map(float, input("Введите коэффициенты квадратного уравнения a, b, c: ").split())
-    
+
     try:
         root1 = -b / 2 + math.sqrt((b / 2) ** 2 - c)
         root2 = -b / 2 - math.sqrt((b / 2) ** 2 - c)
