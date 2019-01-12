@@ -1,5 +1,5 @@
 
-__author__ = 'Ваши Ф.И.О.'
+__author__ = 'Шастин Павел'
 
 # Задача-1: Дано произвольное целое число, вывести самую большую цифру этого числа.
 # Например, дается x = 58375.
@@ -25,3 +25,47 @@ __author__ = 'Ваши Ф.И.О.'
 # Для вычисления квадратного корня воспользуйтесь функцией sqrt() модуля math:
 # import math
 # math.sqrt(4) - вычисляет корень числа 4
+
+#Задача 1
+
+# numStr = str(input("Введите целое число: "))
+#
+# maxNum = 0
+# for num in numStr:
+#     num = int(num)
+#     if num > maxNum:
+#         maxNum = num
+#
+# print(maxNum)
+
+#Задача 2
+
+# firstNum = int(input("Ввведите первое число: "))
+# secondNum = int(input("Ввведите второе число: "))
+#
+# interNum = firstNum
+# firstNum = secondNum
+# secondNum = interNum
+# print(firstNum, secondNum)
+
+# tupleInit = tuple(input("Введите два числа через пробел: ").split())
+# print(" ".join(tupleInit[-1:] + tupleInit[:1]))
+
+
+#Задача 3
+import math
+a = 0
+
+while a < 5:
+    a, b, c = map(float, input("Введите коэффициенты квадратного уравнения a, b, c: ").split())
+    
+    try:
+        root1 = -b / 2 + math.sqrt((b / 2) ** 2 - c)
+        root2 = -b / 2 - math.sqrt((b / 2) ** 2 - c)
+        print(root1, root2)
+    except ValueError:
+        print("Уравнение имеет комплексные корни")
+
+a += 1
+
+
