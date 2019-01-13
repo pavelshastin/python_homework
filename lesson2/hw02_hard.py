@@ -75,6 +75,7 @@ roomNum = int(input("Введите номер комнаты: "))
 floor = 2
 room = 2
 block = 2
+stop = False
 
 
 
@@ -89,14 +90,15 @@ while True:
 
             if room == roomNum:
                 print(floor, numLeft + 1)
+                stop = True
                 break
             room += 1
 
-        if room == roomNum:
+        if stop:
             break
         floor += 1
 
-    if room == roomNum:
+    if stop:
         break
     block += 1
 
