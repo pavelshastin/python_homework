@@ -62,45 +62,94 @@ date = '-2.10.3001'
 
 # Задача 2
 
+initDate = input("Введите дату: ")
 
-#initDate = input("Введите дату: ")
+def checkDate(date):
+    format = "dD/MM/Yyyy".lower()
 
+    dateFormat = {
+        "month_day": {1: 31, 2: 28, 3: 31, 4: 30, 5: 30, 6: 31, 7: 31, 8: 31, 9: 30, 10: 31, 11: 30, 12: 31},
+        "yearMax": {1: 2, 2: 2, 3: 4, 4: 4}[format.count("y")] or 4,  #Подгоняет указанные формат года под возможный
+        "monthMax": {1: 1, 2: 2}[format.count("m")] or 2,
+        "dayMax": {1: 1, 2: 2}[format.count("d")] or 2,
+        "delimeter": {0: "/", 2: "."}[format.count(".") or 0]
+    }
+
+    #print(dateFormat["yearMax"])
+
+    if len(date) > (dateFormat["yearMax"] + dateFormat["monthMax"] + dateFormat["dayMax"] + 2):
+        return "Количество символов в дате больше указанного формата"
+
+    delimeter = dateFormat["delimeter"]
+    if date.count(delimeter) !=2:
+        return "Указан не верный разделитель \"{}\" или количесво разделителей не равно 2".format(delimeter)
+
+    day, month, year = initDate.split(delimeter)
+    dayInt, monthInt, yearInt = list(map(int, initDate.split(delimeter)))
+
+
+    errorMessage = ""
+
+    if len(day) != dateFormat["dayMax"]:
+        errorMessage += "Количество символов дня в дате не соответсвует заданному формату\n"
+    if len(month) != dateFormat["monthMax"]:
+        errorMessage += "Количество символов месяца в дате не соответсвует заданному формату\n"
+    if len(year) != dateFormat["yearMax"]:
+        errorMessage += "Количество символов года в дате не соответсвует заданному формату\n"
+    if dayInt < 1:
+        errorMessage += "День не может быть отрицательным числом или нулем\n"
+    if monthInt < 1:
+        errorMessage += "Месяц не может быть отрицательным числом или нулем\n"
+    if yearInt < 1:
+        errorMessage += "Год не может быть отрицательным числом или нулем\n"
+    if  0 < monthInt > 31:
+        errorMessage += "Номер дня не может быть больше 31\n"
+    if 0 < monthInt > 12:
+        errorMessage += "Номер месяца не может быть больше 12\n"
+    if 0 < monthInt <= 12 and 0 < dayInt > dateFormat["month_day"][monthInt]:
+        errorMessage += "Количество дней в данном месяце меньше\n"
+
+    if errorMessage:
+        return errorMessage
+    else:
+        return "Дата соответсвует формату"
+
+
+print(checkDate(initDate))
 
 
 
 #Задача 3
 
-roomNum = int(input("Введите номер комнаты: "))
-
-floor = 2
-room = 2
-block = 2
-stop = False
-
-
-
-while True:
-    if roomNum == 1:
-        print(1, 1)
-        break
-
-    for _ in range(block):
-        for numLeft in range(block):
-            #print(block, floor, room)
-
-            if room == roomNum:
-                print(floor, numLeft + 1)
-                stop = True
-                break
-            room += 1
-
-        if stop:
-            break
-        floor += 1
-
-    if stop:
-        break
-    block += 1
+# roomNum = int(input("Введите номер комнаты: "))
+#
+# floor = 2
+# room = 2
+# block = 2
+# stop = False
+#
+# while True:
+#     if roomNum == 1:
+#         print(1, 1)
+#         break
+#
+#     for _ in range(block):
+#         for numLeft in range(block):
+#             #print(block, floor, room)
+#
+#             if room == roomNum:
+#                 print(floor, numLeft + 1)
+#                 stop = True
+#                 break
+#             room += 1
+#
+#         if stop:
+#             break
+#         floor += 1
+#
+#     if stop:
+#         break
+#     block += 1
 
 
 
