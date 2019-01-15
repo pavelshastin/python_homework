@@ -58,7 +58,42 @@ date = '-2.10.3001'
 # Выход: 5 3
 
 # Задача 1
+import re
 
+equation = input("Введите линейное уравнение в формате y = kx + b: ")
+x = float(input("Введите аргумент x: "))
+
+def LinearEquation(eq):
+    def __check__(eq):
+        return True if re.match(r"^[a-z]=[-+0-9]*\.{0,1}[0-9]*[a-z][0-9+-]*\.{0,1}[0-9]*$", eq.replace(" ", "")) else False
+
+    def __parse__(eq):
+        rightPart = re.split(r"=", eq.replace(" ", ""))[1]
+        leftSplit = re.split(r"[a-z]", rightPart)
+
+        if leftSplit[0]:
+            k = float(leftSplit[0]) if leftSplit[0] != "-" else -1
+        else:
+            k = 1
+
+        b = float(leftSplit[1]) if leftSplit[1] else 0
+        return {"k": k, "b": b}
+
+    def __solve__(var):
+        facts = __parse__(eq)
+        y = facts["k"]*float(var) + facts["b"]
+        return y
+
+    def __error__(var):
+        return "Уравнение не соответсвует шаблону y = kx + k"
+
+    if __check__(eq):
+        return __solve__
+
+    return __error__
+
+linearEquation = LinearEquation(equation)
+print(linearEquation(x))
 
 # Задача 2
 
@@ -121,35 +156,35 @@ print(checkDate(initDate))
 
 #Задача 3
 
-# roomNum = int(input("Введите номер комнаты: "))
-#
-# floor = 2
-# room = 2
-# block = 2
-# stop = False
-#
-# while True:
-#     if roomNum == 1:
-#         print(1, 1)
-#         break
-#
-#     for _ in range(block):
-#         for numLeft in range(block):
-#             #print(block, floor, room)
-#
-#             if room == roomNum:
-#                 print(floor, numLeft + 1)
-#                 stop = True
-#                 break
-#             room += 1
-#
-#         if stop:
-#             break
-#         floor += 1
-#
-#     if stop:
-#         break
-#     block += 1
+roomNum = int(input("Введите номер комнаты: "))
+
+floor = 2
+room = 2
+block = 2
+stop = False
+
+while True:
+    if roomNum == 1:
+        print(1, 1)
+        break
+
+    for _ in range(block):
+        for numLeft in range(block):
+            #print(block, floor, room)
+
+            if room == roomNum:
+                print(floor, numLeft + 1)
+                stop = True
+                break
+            room += 1
+
+        if stop:
+            break
+        floor += 1
+
+    if stop:
+        break
+    block += 1
 
 
 
