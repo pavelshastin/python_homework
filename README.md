@@ -2,7 +2,7 @@
 python_homework
 
 <div style="font-size: 20px; ">
-Шастин П.А.
+Шастин П.А.</br></br>
 
 Урок 1. hard, normal - сделал</br></br>
 Урок 2. hard, normal - сделал</br></br>
