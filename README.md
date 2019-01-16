@@ -4,9 +4,9 @@ python_homework
 
 Шастин П.А.
 
-Урок 1. hard, normal - сделал
-Урок 2. hard, normal - сделал
-Урок 3. normal - НЕ сделал
+Урок 1. hard, normal - сделал</br>
+Урок 2. hard, normal - сделал</br>
+Урок 3. normal - НЕ сделал</br>
 Урок 4. normal - НЕ сделал
 Урок 5. общее - НЕ сделал
 Урок 6. общее - НЕ сделал
