@@ -120,7 +120,6 @@
 # DIR = "data"
 # workers = []
 # hours_of = []
-# salary = []
 #
 # with open(os.path.join(DIR, "workers"), "r", encoding="UTF-8") as ws:
 #     ws.readline() # skipping first kine of file with column names
@@ -200,4 +199,30 @@
 # и распределять по файлам в зависимости от первых букв, имеющихся в списке фруктов.
 # Подсказка:
 # Чтобы получить список больших букв русского алфавита:
-print(list(map(chr, range(ord('А'), ord('Я')+1))))
+
+import os
+
+DIR = "data"
+
+fruits = []
+with open(os.path.join(DIR, "fruits.txt"), "r", encoding="UTF-8") as f:
+    for line in f:
+        if line.strip():
+            fruits.append(line.strip())
+
+
+if os.path.isdir(os.path.join(os.getcwd(), "fruits")) == False:
+    os.mkdir(os.path.join(os.getcwd(), "fruits"))
+
+letters = list(map(chr, range(ord('А'), ord('Я')+1)))
+filteredList = []
+
+# for l in letters:
+#     l = l.title()
+#
+#     for fruit in fruits:
+
+
+
+
+
