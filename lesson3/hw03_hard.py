@@ -114,57 +114,76 @@
 # то их ЗП уменьшается пропорционально, а за заждый час переработки
 # они получают удвоенную ЗП, пропорциональную норме.
 # Кол-во часов, которые были отработаны, указаны в файле "data/hours_of"
-import os
 
-DIR = "data"
-workers = []
-hours_of = []
-salary = []
+# import os
+#
+# DIR = "data"
+# workers = []
+# hours_of = []
+# salary = []
+#
+# with open(os.path.join(DIR, "workers"), "r", encoding="UTF-8") as ws:
+#     ws.readline() # skipping first kine of file with column names
+#
+#     for line in ws:
+#         worker = list(map(lambda x: int(x) if x.isnumeric() else x, line.split()))
+#         if worker:
+#             workers.append(worker)
+#
+#     #print(workers)
+#
+# with open(os.path.join(DIR, "hours_of"), "r", encoding="UTF-8") as hs:
+#      hs.readline() # skipping first kine of file with column names
+#
+#      for line in hs:
+#          hours = list(map(lambda x: int(x) if x.isnumeric() else x, line.split()))
+#
+#          if hours:
+#             hours_of.append(hours)
+#
+#      #print(hours_of)
+#
+# #Merging "workers" and "hours_of" lists based on workers
+# for hours in hours_of:
+#
+#     for worker in workers:
+#         if hours[0] in worker and hours[1] in worker:
+#             worker.append(hours[2])
+#
+# #Estimating salaries
+# for worker in workers:
+#     hoursNorm = worker[4]
+#     salary = worker[2]
+#     hoursWorked = worker[5]
+#     hourRate = salary/hoursNorm
+#
+#     payment = hourRate * hoursWorked if hoursNorm > hoursWorked else salary + (hoursWorked - hoursNorm) * hourRate * 2
+#     worker.append(round(payment, 2))
+#
+#
+#
+# #Justifing output
+# tableHead = ['Имя', 'Фамилия', 'Зарплата', 'Должность', 'Норма_часов', 'Отработано_часов', 'Начислено']
+# workers.insert(0, tableHead)
+#
+# workersTable = list(map(list, (zip(*workers))))
+# workers = []
+# for column in workersTable:
+#     column = list(map(str, column))
+#     maxLen = max(list(map(len, column)))
+#
+#     workers.append(list(map(lambda x: x.ljust(maxLen, " "), column)))
+#
+#
+# workers = list(zip(*workers))
+# print(workers)
 
-with open(os.path.join(DIR, "workers"), "r", encoding="UTF-8") as ws:
-    ws.readline()
-    f_flag = 0
-    l_flag = -1
-
-    while f_flag != l_flag:
-        f_flag = ws.tell()
-
-        line = ws.readline()
-        worker = list(map(lambda x: int(x) if x.isnumeric() else x, line.split()))
-        workers.append(worker)
-
-        l_flag = ws.tell()
-
-    print(workers)
-
-with open(os.path.join(DIR, "hours_of"), "r", encoding="UTF-8") as hs:
-     hs.readline()
-     f_flag = 0
-     l_flag = -1
-
-     while f_flag != l_flag:
-         f_flag = hs.tell()
-
-         line = hs.readline()
-         hours = list(map(lambda x: int(x) if x.isnumeric() else x, line.split()))
-         hours_of.append(hours)
-
-         l_flag = hs.tell()
-
-     print(hours_of)
-
-
-while len(hours_of) > 0:
-    hours = hours_of.pop()
-    print(hours, len(hours))
-
-    # for worker in workers:
-    #     if hours[0] in worker and hours[1] in worker:
-    #         worker.append(hours[2])
-
-
-     #    with open(os.path.join(DIR, "salary"), "a", encoding="UTF-8") as s:
-
+#
+# #Outputting the data to the salary file
+#
+# with open(os.path.join(DIR, "salary"), "a", encoding="UTF-8") as s:
+#     for worker in workers:
+#         s.write("   ".join(worker) + os.linesep)
 
 
 
@@ -181,4 +200,4 @@ while len(hours_of) > 0:
 # и распределять по файлам в зависимости от первых букв, имеющихся в списке фруктов.
 # Подсказка:
 # Чтобы получить список больших букв русского алфавита:
-# print(list(map(chr, range(ord('А'), ord('Я')+1))))
+print(list(map(chr, range(ord('А'), ord('Я')+1))))
