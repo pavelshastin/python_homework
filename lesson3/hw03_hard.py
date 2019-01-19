@@ -202,10 +202,9 @@
 
 import os
 
-DIR = "data"
 
 fruits = []
-with open(os.path.join(DIR, "fruits.txt"), "r", encoding="UTF-8") as f:
+with open(os.path.join("data", "fruits.txt"), "r", encoding="UTF-8") as f:
     for line in f:
         if line.strip():
             fruits.append(line.strip())
@@ -214,15 +213,24 @@ with open(os.path.join(DIR, "fruits.txt"), "r", encoding="UTF-8") as f:
 if os.path.isdir(os.path.join(os.getcwd(), "fruits")) == False:
     os.mkdir(os.path.join(os.getcwd(), "fruits"))
 
+os.chdir(os.path.join(os.getcwd(), "fruits"))
+
+
 letters = list(map(chr, range(ord('А'), ord('Я')+1)))
-filteredList = []
+filteredDict = {}
 
-# for l in letters:
-#     l = l.title()
-#
-#     for fruit in fruits:
+#Putting fruits to the dictionary
+while len(fruits) > 0:
+    fruit = fruits.pop().title()
 
+    if filteredDict.get(fruit[0]) == None:
+        filteredDict[fruit[0]] = []
 
+    filteredDict[fruit[0]].append(fruit)
 
+for key, value in filteredDict.items():
+    strToPaste = os.linesep.join(sorted(filteredDict[key]))
 
+    with open("fruit_{}".format(key), "w", encoding="UTF-8") as f:
+        f.write(strToPaste)
 
