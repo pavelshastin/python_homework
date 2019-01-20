@@ -101,4 +101,34 @@
 # Задача-4:
 # Даны четыре точки А1(х1, у1), А2(x2 ,у2), А3(x3 , у3), А4(х4, у4).
 # Определить, будут ли они вершинами параллелограмма.
+import math
+# inputStr = "3,5 7,12 12,9 8,2"
 
+a1, a2, a3, a4 = list(map(lambda x: tuple(map(int, x.split(","))), list(map(str, inputStr.split()))))
+
+
+def isParallelogram(a1, a2, a3, a4):
+    """
+    Compares opposite edges of 4-points perimeter. If they are equal than returns true, otherwise false
+    :param a1: tuple (x,y)
+    :param a2: tuple (x,y)
+    :param a3: tuple (x,y)
+    :param a4: tuple (x,y)
+    :return: bool
+    """
+
+    coords = sorted([a1, a2, a3, a4])
+
+    edge12 = math.sqrt((coords[1][0] - coords[0][0])**2 + (coords[1][1] - coords[0][1])**2)
+    edge13 = math.sqrt((coords[2][0] - coords[0][0])**2 + (coords[2][1] - coords[0][1])**2)
+    edge24 = math.sqrt((coords[3][0] - coords[1][0])**2 + (coords[3][1] - coords[1][1])**2)
+    edge34 = math.sqrt((coords[3][0] - coords[2][0])**2 + (coords[3][1] - coords[2][1])**2)
+
+
+    if edge12 == edge34 and edge13 == edge24:
+        return True
+
+    return False
+
+
+print(isParallelogram(a1, a2, a3, a4))
