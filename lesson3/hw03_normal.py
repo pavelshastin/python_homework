@@ -31,14 +31,36 @@
 # Для решения данной задачи нельзя использовать встроенную функцию и метод sort()
 
 
-def sort_to_max(origin_list):
-    pass
-
-sort_to_max([2, 10, -12, 2.5, 20, -11, 4, 4, 0])
-
-
-
-
+# def sort_to_max(*args):
+#     if len(args) != 1:
+#         return "The {} requires one argument. {} given".format("sort_to_max", len(args))
+#     if type(args[0]).__name__ != "list":
+#         return "The given argument is not a list"
+#
+#     flag = 0
+#     i = 0
+#     n = 0 # Number of outer iterations
+#
+#     while i < len(args[0]) - 1:
+#
+#         if args[0][i] > args[0][i+1]:
+#             buf = args[0][i+1]
+#             args[0][i+1] = args[0][i]
+#             args[0][i] = buf
+#             flag = 1
+#
+#         i += 1
+#
+#         if i == len(args[0]) - n - 1 and flag == 1:
+#             print(i)
+#             flag = 0
+#             i = 0
+#             n += 1
+#
+#     return args[0]
+#
+#
+# print(sort_to_max([2, 10, -12, 2.5, 20, -11, 4, 4, 0]))
 
 
 # Задача-3:
@@ -79,3 +101,4 @@ sort_to_max([2, 10, -12, 2.5, 20, -11, 4, 4, 0])
 # Задача-4:
 # Даны четыре точки А1(х1, у1), А2(x2 ,у2), А3(x3 , у3), А4(х4, у4).
 # Определить, будут ли они вершинами параллелограмма.
+
