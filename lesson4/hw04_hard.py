@@ -14,8 +14,8 @@ matrix = [[1, 0, 8],
 
 # Суть сложности hard: Решите задачу в одну строку
 
-# transMatrix = list(map(list, zip(*matrix)))
-# print(transMatrix)
+transMatrix = list(map(list, zip(*matrix)))
+print(transMatrix)
 
 
 # Задание-2:
@@ -85,3 +85,4 @@ print(max_prod, max_idx)
 # Программа получает на вход восемь пар чисел,
 # каждое число от 1 до 8 — координаты 8 ферзей.
 # Если ферзи не бьют друг друга, выведите слово NO, иначе выведите YES.
+
