@@ -86,3 +86,75 @@ print(max_prod, max_idx)
 # каждое число от 1 до 8 — координаты 8 ферзей.
 # Если ферзи не бьют друг друга, выведите слово NO, иначе выведите YES.
 
+import re
+
+
+inputStr = input("Введите координаты ферзей в формате (x,y) через пробел: ")
+#inputStr = "(1,2) (2,4) (3,6) (4,8) (5,3) (6,1) (7,7) (8,5)"
+q_coords = list(map(lambda x: tuple(map(lambda y: int(y)-1, re.findall(r"\d", x))), inputStr.split()))
+
+print("Matrix coords: ", q_coords)
+
+def queens_fight(q_coords):
+    matrix = [[0 for _ in range(8)] for _ in range(8)]
+    ind_coords = {}
+
+    #Creating a lists of the queen fighting coordinates
+    for q in q_coords:
+        ind_coords[q] = [q]
+
+        # Horizontal and vertiacal coordinates
+        for i, line in enumerate(matrix):
+            for j, el in enumerate(line):
+                if i == q[0] or j == q[1]:
+                    ind_coords[q].append((i, j))
+
+        # Diagonal coordinates
+        i = q[0]
+        j = q[1]
+
+        while i < 7 and j < 7:
+            i += 1
+            j += 1
+            #print("1: ", i, j)
+            ind_coords[q].append((i, j))
+
+        i = q[0]
+        j = q[1]
+
+        while i > 0 and j > 0:
+            i -= 1
+            j -= 1
+            #print("2: ", i, j)
+            ind_coords[q].append((i, j))
+
+        i = q[0]
+        j = q[1]
+
+        while i < 7 and j > 0:
+            i += 1
+            j -= 1
+            #print("3: ", i, j)
+            ind_coords[q].append((i, j))
+
+        i = q[0]
+        j = q[1]
+
+        while i > 0 and j < 7:
+            i -= 1
+            j += 1
+            #print("4: ", i, j)
+            ind_coords[q].append((i, j))
+
+    #checking coordinates
+    for q in q_coords:
+        for key, coords in ind_coords.items():
+            if key == q:
+                continue
+
+            if q in coords:
+                return "YES"
+
+    return "NO"
+
+print(queens_fight(q_coords))
