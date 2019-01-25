@@ -28,26 +28,26 @@ class DataBase:
                 raise FileNotFoundError("Database doesn't exist")
 
         self.db_name = db_name
-        self.headers = {}
+        self.headers = None
         self.f = None
-        self.table = None
+
 
 
     def connect(self, table):
         if self.f is None:
             self.f = open(table, "r", encoding="UTF-8")
-            self.table = table
+
             return self
         raise ValueError("To establish new connection you need to close previous one.")
 
     def getHeaders(self):
-        if self.headers[self.table] is None:
+        if self.headers is None:
             self.f.__iter__()
             line = self.f.readline()
 
-            self.headers[self.table] = tuple(map(lambda x: x.strip(), re.split(r" {3,}", line)))
+            self.headers = tuple(map(lambda x: x.strip(), re.split(r" {3,}", line)))
 
-        return self.headers[self.table]
+        return self.headers
 
     def getAll(self):
         self.f.__iter__()
@@ -60,6 +60,7 @@ class DataBase:
     def close(self):
         self.f.close()
         self.f = None
+        self.headers = None
 
 
 
