@@ -21,7 +21,6 @@ import re
 import sys
 from shutil import copyfile
 
-#Getting 'current' directory stored in temp-file curr_dir.txt to provide proper local cd-command
 curr_dir_store = os.path.join(os.getcwd(), "curr_dir.txt")
 
 if (os.path.exists(curr_dir_store)):
@@ -57,24 +56,16 @@ def ping():
 
 def copy_file():
     try:
-        #Preparing new copy file name
-
-        # getting a file to be copied and spliting it by name and resolution
         file_name = re.match(r"(.+)\.(\w+$)", sys.argv[2]).groups()
-
-        #re-string to find copies of a given file that were made before in 'current' difrectory with template like
-        # <init_file_name>_copy(_n).<res>
 
         match_str = r"(^{}_copy)(_\d)*\.(\w+$)".format(file_name[0])
 
         dir_includes = os.listdir(curr_dir)
-        #print(curr_dir)
-        #print(dir_includes)
+        print(curr_dir)
+        print(dir_includes)
 
-        #List of all files matching the copy-template
         copy_files = [re.match(match_str, f).groups() for f in dir_includes if re.match(match_str, f)]
 
-        #finding the max number of copy-files and creating a name to a new copy of the same file
         if copy_files:
             nums = []
             for file in copy_files:
@@ -90,13 +81,10 @@ def copy_file():
                 copy_name = file_name[0] + "_copy_{}.".format(cur_num) + file_name[1]
 
         else:
-            #if no copy-files are found in the current directory, create a first one with template <init_file_name>_copy.<res>
             copy_name = os.path.join(curr_dir, file_name[0] + "_copy." + file_name[1])
 
-        #print(copy_files, copy_name, curr_dir)
+        print(copy_files, copy_name, curr_dir)
 
-        #Coping itself
-        #Using SHUTIT library. Provide the function with absolute path according to local 'current' dir.
         copyfile(os.path.join(curr_dir, sys.argv[2]), copy_name)
 
     except IndexError:
@@ -111,9 +99,9 @@ def remove_file():
         file_name = sys.argv[2]
 
         if os.path.exists(file_name):
-            confirm = input("Do you realy want to delete {} Y/N: ".format(file_name))
+            confirm = input("Do you realy want to delete {} Y/N".format(file_name))
 
-            if confirm.lower() == "y":
+            if confirm.tolower() == "y":
                 os.remove(file_name)
                 print("File is deleted")
             else:
@@ -128,11 +116,11 @@ def change_dir():
     try:
         dir_name = sys.argv[2]
 
-        os.chdir(curr_dir) #Change directory to the "current", stored in curr_dir.txt to provide proper relative paths.
+        os.chdir(curr_dir)
 
         os.chdir(dir_name)
 
-        #save the 'current' directory in local temp file
+
         with open(curr_dir_store, "w", encoding="UTF-8") as f:
             f.write(os.getcwd())
 
