@@ -62,8 +62,34 @@ import random
 
 
 class Cell:
-    def __init__(self):
-        pass
+    def __init__(self, row, col, val):
+        self.row_num = row
+        self.col_num = col
+        self.value = val
+
+    @property
+    def row(self):
+        return self.row_num
+
+    @property
+    def col(self):
+        return self.col_num
+
+    @property
+    def val(self):
+        return self.value
+
+    @row.setter
+    def row(self, row):
+        self.row_num = row
+
+    @col.setter
+    def col(self, col):
+        self.col_num = col
+
+    @val.setter
+    def val(self, val):
+        self.value = val
 
 
 class Card:
@@ -80,7 +106,8 @@ class Card:
                 break
 
         #print(rounds, self.card_list)
-        self.card_mtx = self.__create_mtx()
+        self.cells = self.__create_cells()
+
 
 
     @staticmethod
@@ -108,34 +135,179 @@ class Card:
         return True
 
 
-    def __create_mtx(self):
-        #zero-matrix
-        mtx = dict(enumerate([dict(enumerate([0]*9)), dict(enumerate([0]*9)), dict(enumerate([0]*9))]))
+    def __create_cells(self):
+
+        cells = []
 
         #enumerated card columns
         card_columns = dict(enumerate(self.card_columns))
 
-        #row-numerated matrix of random values
-        nums_mtx = dict(enumerate([self.card_list[0::3], self.card_list[1::3], self.card_list[2::3]]))
-
         #Positioning random values to appropriate cells of card (zero-matrix)
-        for row in nums_mtx:
-            for num in nums_mtx[row]:
-                for col in card_columns:
+        for row in range(3):
+            nums = self.card_list[row::3]
+
+            for col in card_columns:
+                brk = False
+
+                for num in nums:
                     if num in card_columns[col]:
-
-                        mtx[row][col] = num
+                        brk = True
+                        cells.append(Cell(row, col, num))
                         break
+                if brk:
+                    continue
 
-        print(mtx)
+                cells.append(Cell(row, col, 0))
+
+        return cells
 
 
+
+    def show_card(self):
+        for row in range(3):
+
+            row_cells = list(filter(lambda c: c.row == row, self.cells))
+            row_values = list(map(lambda c: " " + str(c.val) if len(str(c.val)) == 1 else str(c.val), row_cells)) #if one digit is given than add space before it
+            row_strings = list(map(lambda v: "00" if v == " 0" else v, row_values)) # add 0 to single-zero-digit to prevent replacemant in numbers such 10, 20 etc
+
+            res_str = "   ".join(row_strings)
+            res_str = res_str.replace("00", "  ")
+            res_str = res_str.replace(" X", "XX")
+
+            print(res_str)
+
+
+
+class Player(Card):
+    def __init__(self, name):
+        Card.__init__(self)
+        self.pl_name = name
 
 
     @property
-    def numbers(self):
-        return self.card_list
+    def name(self):
+        return self.pl_name
+
+    @name.setter
+    def name(self, name):
+        self.pl_name = name
 
 
-comp_card = Card()
-print(comp_card.numbers)
+    def check_card(self, num):
+        check = False
+
+        for c in self.cells:
+            if c.val == num:
+
+                c.val = "X"
+                check = "one"
+                break
+
+        for i in range(3):
+             full_row = []
+             for c in self.cells:
+
+                 if c.row == i and c.val == "X":
+
+                     full_row.append(c)
+
+             if len(full_row) == 5:
+                 check = "all"
+                 break
+
+
+        return check
+
+
+
+
+class DrumsBag:
+    def __init__(self, quant):
+        self.__bag = list(range(1, quant))
+
+
+    def get_drum(self):
+        if len(self.__bag) == 0:
+            return None
+
+        random.shuffle(self.__bag)
+
+        return self.__bag.pop()
+
+
+
+class Game(DrumsBag):
+    def __init__(self, *name):
+        if len(name) != 1:
+            raise TypeError("Require only one player. {} given".format(len(name)))
+
+
+        if type(name[0]) is not str:
+            raise TypeError(self.__name__ + ". Wrong type of arguments")
+
+        DrumsBag.__init__(self, 90)
+
+        self.player = Player(name[0])
+        self.comp = Player("Компьютер")
+
+
+    def __show_game(self):
+        print("------Игрок: {} ----------".format(self.player.name))
+        print(self.player.show_card())
+        print("--------------------------------------")
+
+        print("------Игрок: {} ----------".format(self.comp.name))
+        print(self.comp.show_card())
+        print("--------------------------------------")
+
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+
+        self.__show_game()
+
+        drum = self.get_drum()
+
+        print("Следующий бочонок номер {}.".format(drum))
+
+        inp = ""
+
+        while inp != "y" and inp != "n":
+            inp = input("Зачеркнуть цифру? (y/n): ").lower()
+
+        cmp_check = self.comp.check_card(drum)
+        pl_check = self.player.check_card(drum)
+
+
+        if cmp_check == "all":
+            self.__show_game()
+            return "Выиграл компьютер"
+
+        if pl_check == "one" and inp == "n":
+            return "Выиграл компьютер"
+
+        if pl_check is False and inp == "y":
+            return "Выиграл компьютер"
+
+        if pl_check == "all" and inp == "y":
+            self.__show_game()
+            return "Выиграл {}".format(self.player.name)
+
+        return False
+
+
+
+game = Game("Шастин Павел")
+
+win = False
+
+while win is False:
+    win = next(game)
+
+print(win)
+
+
+
+
