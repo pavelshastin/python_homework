@@ -61,7 +61,12 @@
 import random
 
 
+
 class Cell:
+    """
+    A cell is a lowerest-level object of the game. It has coordinates (col - column, row) and value (val)
+    """
+
     def __init__(self, row, col, val):
         self.row_num = row
         self.col_num = col
@@ -93,9 +98,16 @@ class Cell:
 
 
 class Card:
+    """
+    Class creates a game card with 15 random DIFFERENT numbers divided into 3 rows of 5 elements. Each element is placed into\
+    proper decimal column, For instance, 1 column - 1-9; 2 col - 10-19 ... 9 (last) col - 80-90.
+    """
+
     def __init__(self):
+        #Creates decimal columns
         self.card_columns = [list(range(1, 10))] + [list(range(i, i + 10)) for i in range(10, 79, 10)] + [list(range(80, 91))]
 
+        #The cycle iterates through random bunches of numbers to choose the one that has only DIFFERENT random numbers
         rounds = 0
         while True:
             rounds += 1
@@ -112,9 +124,20 @@ class Card:
 
     @staticmethod
     def create_rand_list(start, end, num):
+        """
+        Creates a SORTED list of random numbers in range(start, end) and quantity of num
+        :param start: int
+        :param end: int
+        :param num: int
+        :return:  sorted list
+        """
         seq = list(range(start, end))
+
+        #start number to make slice of random sequence
         rand_int = random.randint(0, len(seq)-1)
 
+        #make sure that a sequence start number will cover a slice of 15 numbers, If it starts in 80 it will cover\
+        #only 10 numbers. In this case we take last 15 numbers.
         if rand_int + num > len(seq) - 1:
             rand_int = len(seq) - num
 
@@ -123,7 +146,14 @@ class Card:
 
 
     def __check_rand_list(self, rand_list):
-
+        """
+        Checks a list of random numbers in the way that guaranties existence of only 3 numbers of decimal grade.
+        For instance, 50, 54, 56 - only 3, because each card has only 3 rows of particular decimal grade.
+        The function checks if the given random number belongs to the particular card column. If the random list has
+        more numbers than 3, the function returns False.
+        :param rand_list: list
+        :return: boolen
+        """
         for col in self.card_columns:
             q = 0
             for num in rand_list:
@@ -136,6 +166,10 @@ class Card:
 
 
     def __create_cells(self):
+        """
+        The function creates/initializes 3*9 = 18 card card cells to be operated further in the game
+        :return: list of Cell objects.
+        """
 
         cells = []
 
@@ -144,6 +178,7 @@ class Card:
 
         #Positioning random values to appropriate cells of card (zero-matrix)
         for row in range(3):
+            #make a slice of 5 digits from a random 15-digits sorted list. Take slice of every third number.
             nums = self.card_list[row::3]
 
             for col in card_columns:
@@ -157,6 +192,7 @@ class Card:
                 if brk:
                     continue
 
+                #Cells that have no appropriate random numbers are filled with 0
                 cells.append(Cell(row, col, 0))
 
         return cells
@@ -164,6 +200,13 @@ class Card:
 
 
     def show_card(self):
+        """
+        THe function prints a game card row by row. It converts the 0-number cell value into "00" string and then is
+        changed it into "  "- double space string to ensure that zeroes in such numbers as 20, 30 will not be changed.
+
+        :return: nothing
+        """
+
         for row in range(3):
 
             row_cells = list(filter(lambda c: c.row == row, self.cells))
@@ -172,13 +215,17 @@ class Card:
 
             res_str = "   ".join(row_strings)
             res_str = res_str.replace("00", "  ")
-            res_str = res_str.replace(" X", "XX")
+            res_str = res_str.replace(" X", "XX") #The sign shows that a player has covered the card cell with a drum.
 
             print(res_str)
 
 
 
 class Player(Card):
+    """
+    Class creates a player that inherits methods from its parent
+    """
+
     def __init__(self, name):
         Card.__init__(self)
         self.pl_name = name
@@ -194,6 +241,12 @@ class Player(Card):
 
 
     def check_card(self, num):
+        """
+        The function checks if the taken number from the drum bag (num) has the same number in the card. If no returns
+        False. If Yes returns "one". If the card has any totally filled row it returns "all".
+        :param num: int
+        :return: boolean/str
+        """
         check = False
 
         for c in self.cells:
@@ -222,11 +275,23 @@ class Player(Card):
 
 
 class DrumsBag:
+    """
+    Class creates a range(quant) of numbers (drums bag).
+    """
+
     def __init__(self, quant):
+        """
+
+        :param quant: int
+        """
         self.__bag = list(range(1, quant))
 
 
     def get_drum(self):
+        """
+        Returns a last number from randomly shuffled list that represents a drum.
+        :return: int
+        """
         if len(self.__bag) == 0:
             return None
 
@@ -237,7 +302,15 @@ class DrumsBag:
 
 
 class Game(DrumsBag):
+    """
+    Iterating Class that represents a Game.
+    """
+
     def __init__(self, *name):
+        """
+        Create a DrumBag and two players
+        :param name: str
+        """
         if len(name) != 1:
             raise TypeError("Require only one player. {} given".format(len(name)))
 
@@ -252,19 +325,27 @@ class Game(DrumsBag):
 
 
     def __show_game(self):
-        print("------Игрок: {} ----------".format(self.player.name))
-        print(self.player.show_card())
-        print("--------------------------------------")
+        """
+        Prints the game situation of a turn.
+        :return: nothing
+        """
+        print("-----------Игрок: {} --------------".format(self.player.name))
+        self.player.show_card()
+        print("--------------------------------------------")
 
-        print("------Игрок: {} ----------".format(self.comp.name))
-        print(self.comp.show_card())
-        print("--------------------------------------")
+        print("-----------Игрок: {} ---------------".format(self.comp.name))
+        self.comp.show_card()
+        print("--------------------------------------------")
 
 
     def __iter__(self):
         return self
 
     def __next__(self):
+        """
+        Represent a game situation of every turn
+        :return: iterator
+        """
 
         self.__show_game()
 
@@ -274,6 +355,7 @@ class Game(DrumsBag):
 
         inp = ""
 
+        #if a player misses the y/n key it will show input field again
         while inp != "y" and inp != "n":
             inp = input("Зачеркнуть цифру? (y/n): ").lower()
 
