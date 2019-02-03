@@ -1,3 +1,6 @@
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+
 # Задание-1:
 # Реализуйте описаную ниже задачу, используя парадигмы ООП:
 # В школе есть Классы(5А, 7Б и т.д.), в которых учатся Ученики.
@@ -19,7 +22,7 @@ import re
 import random
 
 """
-    CREATING INITIAL DATA AND DEVIDING IT INTO GROUPS: PEOPLE, CLASSES, TEACHERS, PARENTS
+    CREATING INITIAL DATA AND DIVIDING IT INTO GROUPS: PEOPLE, CLASSES, TEACHERS, PARENTS
 """
 
 rand_people = list(re.split(r"\s{2,}", """
@@ -328,8 +331,8 @@ for cl_id, cl in classes.items():
 
 
 #print(people)
-print(len(teachers), teachers)
-print(classes)
+#print(len(teachers), teachers)
+#print(classes)
 #print(len(parents), parents)
 
 
@@ -350,15 +353,20 @@ class Person:
 
     #Checking if the person exists in DB by it's id
     def __new__(cls, surname, name, patriotic):
+        per_id = None
 
-        full_name = {"surname": surname, "name": name, "patriotic": patriotic}
-        id = list(filter(lambda p: dict(people[p].items()) == full_name, people))
+        for id, person in people.items():
+            if person["surname"] == surname and person["name"] == name and person["patriotic"] == patriotic:
+                per_id = id
 
-        if len(id) == 0:
+
+        if per_id == None:
             return None
 
         instance = super(Person, cls).__new__(cls)
-        instance.per_id = id[0]
+
+        instance.per_id = per_id
+
 
         return instance
 
@@ -384,26 +392,25 @@ class Person:
 class Pupil(Person):
     # Checking if the pupil with given name exists in CLASSES by it's id
     def __new__(cls, surname, name, patriotic):
+
         instance = super(Pupil, cls).__new__(cls, surname, name, patriotic)
 
         per_id = instance.per_id
-
-        for cl in classes:
-
-            print(cl, per_id, classes[cl]["pupils"], per_id in classes[cl]["pupils"])
+        print("Person_id", per_id)
 
         cl_id = list(filter(lambda cl: per_id in list(classes[cl]["pupils"]), classes))
 
-        print(cl_id)
+
         if len(cl_id) == 0:
             return None
 
-        print(cl_id)
+
         instance.cl_id = cl_id
         return instance
 
 
     def __init__(self, surname, name, patriotic):
+
         self.surname = surname
         self.name = name
         self.patriotic = patriotic
@@ -452,19 +459,28 @@ class Parent(Person):
 class SchoolClass:
     def __init__(self, cl_id):
         self.cl_id = cl_id
-        self.pupils = classes[cl_id]["pupils"]
         self.subjects = classes[cl_id]["subjects"]
+        self.pupil_ids = classes[cl_id]["pupils"]
+
+        self.pupils = []
+        for pl_id in self.pupil_ids:
+            p = people[pl_id]
+
+            self.pupils.append(Pupil(p["surname"], p["name"], p["patriotic"]))
+
+
 
     def get_id(self):
         return self.cl_id
 
     def get_all_pupils(self):
-        pupil_names = [[*people[pl_id].values()] for pl_id in self.pupils]
-
-        return [Pupil(*pl) for pl in pupil_names]
+        return self.pupils
 
     def add_pupil(self, surname, name, patriotic):
         pass
+
+
+
 
 class School:
     def __init__(self):
@@ -500,11 +516,11 @@ class School:
 
 school = School()
 
-print(school.get_all_classes())
+print("List of all classes in the school: ", school.get_all_classes())
 
 pupils_5A = school.get_all_pupils_of_cl("5 а")
-print(len(pupils_5A))
-print([pl.get_full_name() for pl in pupils_5A])
 
-pupil_1 = school.get_pupil('Сидоров', 'Виссарион', 'Егорович')
-print(type(pupil_1), pupil_1.get_id())
+print("pupil of 5A class: ", [pl.get_short_name() for pl in pupils_5A])
+
+pupil_1 = school.get_pupil('Сидoров', 'Виссарион', 'Егорович')
+print(type(pupil_1), pupil_1.cl_id())
