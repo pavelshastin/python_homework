@@ -339,12 +339,16 @@ for cl_id, cl in classes.items():
 
 
 
+class PersonNotFound(Exception):
+    def __init__(self, type, surname, name, patriotic):
+        self.surname = surname.title()
+        self.name = name.title()
+        self.patriotic = patriotic.title()
+        self.type = type.title()
+        self.dbs = {"Person": "People", "Pupil": "Pupils", "Teacher": "Teachers", "Parent": "Parents"}
 
-
-
-
-
-
+    def __str__(self):
+        return "{} {} {} {} not found among {}".format(self.type, self.surname, self.name, self.patriotic, self.dbs[self.type])
 
 
 
@@ -361,16 +365,16 @@ class Person:
 
 
         if per_id == None:
-            return None
+            raise PersonNotFound("Person", surname, name, patriotic)
 
         instance = super(Person, cls).__new__(cls)
 
         instance.per_id = per_id
 
-
         return instance
 
-    def __init__(self, name, surname, patriotic):
+
+    def __init__(self, surname, name, patriotic):
 
         self.name = name.strip().title()
         self.surname = surname.strip().title()
@@ -380,10 +384,12 @@ class Person:
     def get_id(self):
         return self.per_id
 
-    def get_full_name(self):
+    @property
+    def full_name(self):
         return "{} {} {}".format(self.surname, self.name, self.patriotic)
 
-    def get_short_name(self):
+    @property
+    def short_name(self):
         return "{} {}.{}.".format(self.surname, self.name[:1], self.patriotic[:1])
 
 
@@ -396,88 +402,123 @@ class Pupil(Person):
         instance = super(Pupil, cls).__new__(cls, surname, name, patriotic)
 
         per_id = instance.per_id
-        print("Person_id", per_id)
+
 
         cl_id = list(filter(lambda cl: per_id in list(classes[cl]["pupils"]), classes))
 
-
         if len(cl_id) == 0:
-            return None
+            raise PersonNotFound("Pupil", surname, name, patriotic)
 
-
-        instance.cl_id = cl_id
+        instance.__cl_id = cl_id[0]
         return instance
 
 
-    def __init__(self, surname, name, patriotic):
 
+    def __init__(self, surname, name, patriotic):
         self.surname = surname
         self.name = name
         self.patriotic = patriotic
 
+    @property
+    def class_id(self):
+        return self.__cl_id
 
+    @property
+    def subjects(self):
+        self.subjects = classes[self.__cl_id]["subjects"]
 
-    def get_class_id(self):
-        pass
+        return list(classes[self.__cl_id]["subjects"].keys())
 
+    @property
+    def parents(self):
+        p_parents = [people[p_id] for p_id in parents[self.per_id]]
+        self.__parents_list = [Person(p["surname"], p["name"], p["patriotic"]) for p in p_parents]
+        return self.__parents_list
 
-    def get_subjects(self):
-        pass
-
-    def get_teachers(self):
-        pass
-
-    def get_parents(self):
-        pass
+    @property
+    def pupil_card(self):
+        return {
+            "surname": self.surname,
+            "name": self.name,
+            "patritic": self.patriotic,
+            "class": self.__cl_id,
+            "parents": self.get_parents()
+        }
 
 
 
 class Teacher(Person):
-    def __init__(self, name, surname, patriotic, subject):
-        Person.__init__(name, surname, patriotic)
-        id = Person.get_id()
-        teachers[id] = subject
+    # Checking if the teacher with given name exists in TEACHERS by his id
+    def __new__(cls, surname, name, patriotic):
+        instance = super(Teacher, cls).__new__(cls, surname, name, patriotic)
 
+        per_id = instance.per_id
 
+        if per_id not in teachers.keys():
+            raise PersonNotFound("Teacher", surname, name, patriotic)
 
+        instance.__classes = teachers[per_id]["classes"]
+        instance.__subject = teachers[per_id]["subject"]
+        return instance
 
-class Parent(Person):
-    def __init__(self, name, surname, patriotic, p_name, p_surname, p_patriotic):
-        Person.__init__(name, surname, patriotic)
-        id = Person.get_id()
+    def __init__(self, surname, name, patriotic):
+        self.surname = surname
+        self.name = name
+        self.patriotic = patriotic
 
-        for id, p in people.items():
-            if p["name"] == p_name and p["surname"] == p_surname and p["patriotic"] == p_patriotic:
-                pupil_id = id
-        parents[id] = pupil_id
+    @property
+    def subject(self):
+        return self.__subject
 
-
+    @property
+    def classes(self):
+        return self.__classes
 
 
 
 
 class SchoolClass:
     def __init__(self, cl_id):
-        self.cl_id = cl_id
-        self.subjects = classes[cl_id]["subjects"]
+        self.__cl_id = cl_id
+        self.subjects_list = classes[cl_id]["subjects"]
         self.pupil_ids = classes[cl_id]["pupils"]
 
-        self.pupils = []
+        self.pupils_list = []
         for pl_id in self.pupil_ids:
             p = people[pl_id]
 
-            self.pupils.append(Pupil(p["surname"], p["name"], p["patriotic"]))
+            self.pupils_list.append(Pupil(p["surname"], p["name"], p["patriotic"]))
 
+    @property
+    def class_id(self):
+        return self.__cl_id
 
+    @property
+    def subjects(self):
+        if self.subjects_list is None:
+            self.subjects_list = classes[self.__cl_id]["subjects"]
 
-    def get_id(self):
-        return self.cl_id
+        return list(self.subjects_list.keys())
 
-    def get_all_pupils(self):
-        return self.pupils
+    @property
+    def teachers(self):
+        if self.subjects_list is None:
+            self.subjects_list = classes[self.__cl_id]["subjects"]
+
+        self.teachers_list = []
+        for s, t_id in self.subjects_list.items():
+            p = people[t_id]
+            self.teachers_list.append(Teacher(p["surname"], p["name"], p["patriotic"]))
+
+        return self.teachers_list
+
+    @property
+    def pupils(self):
+        return self.pupils_list
 
     def add_pupil(self, surname, name, patriotic):
         pass
+
 
 
 
@@ -492,27 +533,30 @@ class School:
         self.parents = []
 
     def get_all_classes(self):
-        return [cl.get_id() for cl in self.classes]
+        return [cl.class_id for cl in self.classes]
 
-    def rename_class(self, cl_id, new_cl_id):
-        pass
 
     def get_all_pupils_of_cl(self, cl_id):
         cl = self.get_class_by_id(cl_id)
-        return cl.get_all_pupils()
+        return cl.pupils
 
 
     def get_pupil(self, surname, name, patriotic):
         return Pupil(surname, name, patriotic)
 
-
     def get_class_by_id(self, cl_id):
         cl_id = cl_id.strip().upper().replace(" ", "")
 
-        return [cl for cl in self.classes if cl.get_id() == cl_id][0]
+        return [cl for cl in self.classes if cl.class_id == cl_id][0]
 
     def get_all_pupils(self):
         pass
+
+    def rename_class(self, cl_id, new_cl_id):
+        pass
+
+
+
 
 school = School()
 
@@ -520,7 +564,26 @@ print("List of all classes in the school: ", school.get_all_classes())
 
 pupils_5A = school.get_all_pupils_of_cl("5 а")
 
-print("pupil of 5A class: ", [pl.get_short_name() for pl in pupils_5A])
+print("pupils of 5A class: ", [pl.full_name for pl in pupils_5A])
 
-pupil_1 = school.get_pupil('Сидoров', 'Виссарион', 'Егорович')
-print(type(pupil_1), pupil_1.cl_id())
+pupil = pupils_5A[0]
+surname, name, patriotic = pupil.full_name.split()
+
+print(pupil.class_id, surname, name, patriotic)
+
+pupil_1 = school.get_pupil(surname, name, patriotic)
+
+parents = [p.full_name for p in pupil_1.parents]
+
+class_pupil_1 = SchoolClass(pupil_1.class_id)
+
+class_subjects = class_pupil_1.subjects
+
+class_teachers = [{t.subject: t.full_name} for t in class_pupil_1.teachers]
+
+
+print("pupil: ", pupil_1.full_name)
+print("parents: ", parents)
+print("class: ", class_pupil_1.class_id)
+print("subjects: ", class_subjects)
+print("teachers: ", class_teachers)
