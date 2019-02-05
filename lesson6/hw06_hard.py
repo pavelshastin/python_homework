@@ -27,80 +27,88 @@ class DataBase:
                 raise FileNotFoundError("Database doesn't exist")
 
         self.db_name = db_name
-        self.headers = None
-        self.f = None
-        self.head_line = False
-
 
 
     def connect(self, table):
-        if self.f is None:
-            self.f = open(table, "r", encoding="UTF-8")
-            self._setHeaders(self.f)
-            return self
-
-        if self.f.name == table:
-            return self
-
-        raise ValueError("To establish new connection you need to close previous one.")
-
-    def _setHeaders(self, f_iter):
-        if self.headers is None:
-            f_iter.seek(0, 0)
-            line = f_iter.readline()
-
-            self.headers = tuple(map(lambda x: x.strip(), re.split(r" {3,}", line)))
+            class Connect:
+                def __init__(self, f):
+                    self.headers = self._setHeaders(f)
 
 
-    def getHeaders(self):
-        return self.headers if self.headers else None
+                def _setHeaders(self, f_iter):
+                    f_iter.seek(0, 0)
+                    line = f_iter.readline()
+
+                    return tuple(map(lambda x: x.strip(), re.split(r" {3,}", line)))
 
 
-    def getAll(self):
-        self.f.seek(0, 0)
-        self.f.readline() #to skip the first header line
+                def getHeaders(self):
+                    return self.headers if self.headers else None
 
-        res = list(map(lambda line: dict(zip(self.headers, line.split())), self.f.readlines()))
 
-        self.f.seek(0, 0) #to return the caret to the beginning
+                def getAll(self):
+                    f.seek(0, 0)
+                    f.readline()  # to skip the first header line
 
-        return res
+                    res = list(map(lambda line: dict(zip(self.headers, line.split())), f.readlines()))
+
+                    f.seek(0, 0)  # to return the caret to the beginning
+
+                    return res
+
+
+                def close(self):
+                    f.close()
+
+
+                def __iter__(self):
+                    self.f.seek(0, 0)
+                    self.f.readline()  # to skip the first header line
+
+                    if self.headers is None:
+                        self.getHeaders()
+
+                    for line in self.f:
+                        yield dict(zip(self.headers, line.split()))
+
+                    self.f.seek(0, 0)
+                    self.head_line = False
+
+
+                def __next__(self):
+                    # to skip the first header line
+                    if self.head_line is False:
+                        self.f.readline()
+                        self.head_line = True
+                    res = dict(zip(self.headers, self.f.readline().split()))
+
+                    return res if res else False
+
+
+
+            f = open(table, "r", encoding="UTF-8")
+
+            return Connect(f)
+
 
     def close(self):
-        self.f.close()
-        self.f = None
-        self.headers = None
+        # return the path pointer to the initial state (see __init__)
+        os.chdir("../")
+
+    def __del__(self):
+        #return the path pointer to the initial state (see __init__)
+        os.chdir("../")
 
 
-    def __iter__(self):
-        self.f.seek(0, 0)
-        self.f.readline()  # to skip the first header line
 
-        if self.headers is None:
-            self.getHeaders()
-
-        for line in self.f:
-            yield dict(zip(self.headers, line.split()))
-
-        self.f.seek(0, 0)
-        self.head_line = False
-
-
-    def __next__(self):
-        #to skip the first header line
-        if self.head_line is False:
-            self.f.readline()
-            self.head_line = True
-        res = dict(zip(self.headers, self.f.readline().split()))
-
-        return res if res else False
 
 
 db = DataBase("data")
 
 
 print(db.connect("hours_of").getAll())
-db.close()
+
+
 print(db.connect("workers").getHeaders())
 print(db.connect("workers").getAll())
 

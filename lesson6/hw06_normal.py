@@ -341,6 +341,13 @@ for cl_id, cl in classes.items():
 
 class PersonNotFound(Exception):
     def __init__(self, type, surname, name, patriotic):
+        """
+        An Exception thrown when a person is not found in DB
+        :param type: str
+        :param surname: str
+        :param name: str
+        :param patriotic: str
+        """
         self.surname = surname.title()
         self.name = name.title()
         self.patriotic = patriotic.title()
@@ -355,7 +362,7 @@ class PersonNotFound(Exception):
 
 class Person:
 
-    #Checking if the person exists in DB by it's id
+    #Checking if the person exists in DB by his id
     def __new__(cls, surname, name, patriotic):
         per_id = None
 
@@ -479,6 +486,11 @@ class Teacher(Person):
 
 class SchoolClass:
     def __init__(self, cl_id):
+        """
+        Initializing SchoolClass object. Recieving data about subjects which are taught in class,
+        pupils that learn in class. Creating a list on Pupil onjects
+        :param cl_id: str
+        """
         self.__cl_id = cl_id
         self.subjects_list = classes[cl_id]["subjects"]
         self.pupil_ids = classes[cl_id]["pupils"]
@@ -544,6 +556,7 @@ class School:
     def get_pupil(self, surname, name, patriotic):
         return Pupil(surname, name, patriotic)
 
+
     def get_class_by_id(self, cl_id):
         cl_id = cl_id.strip().upper().replace(" ", "")
 
@@ -560,16 +573,12 @@ class School:
 
 school = School()
 
-print("List of all classes in the school: ", school.get_all_classes())
-
 pupils_5A = school.get_all_pupils_of_cl("5 а")
-
-print("pupils of 5A class: ", [pl.full_name for pl in pupils_5A])
 
 pupil = pupils_5A[0]
 surname, name, patriotic = pupil.full_name.split()
 
-print(pupil.class_id, surname, name, patriotic)
+#print(pupil.class_id, surname, name, patriotic)
 
 pupil_1 = school.get_pupil(surname, name, patriotic)
 
@@ -582,6 +591,8 @@ class_subjects = class_pupil_1.subjects
 class_teachers = [{t.subject: t.full_name} for t in class_pupil_1.teachers]
 
 
+print("List of all classes in the school: ", school.get_all_classes())
+print("pupils of 5A class: ", [pl.full_name for pl in pupils_5A])
 print("pupil: ", pupil_1.full_name)
 print("parents: ", parents)
 print("class: ", class_pupil_1.class_id)
