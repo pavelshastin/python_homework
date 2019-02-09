@@ -1,4 +1,4 @@
-
+# =*= coding: utf-8 =*=
 """ 
 == OpenWeatherMap ==
 
@@ -218,13 +218,16 @@ if inp == "-A" or inp == "-N" or inp == "":
 
     #Creating dictionary {country_code: country_name}
     country_names = {}
-    with open(country_code_file, "r", encoding="UTF-8") as csvfile:
-        reader = csv.DictReader(csvfile)
+    with open(country_code_file, "r", encoding="UTF-8") as f:
+        dialect = csv.Sniffer().sniff(f.read(1024))
+        f.seek(0)
+        reader = csv.reader(f, dialect)
 
         for row in reader:
-            name, code = row.items()
-            country_names[code[1]] = name[1]
+            name, code = row
+            country_names[code] = name
 
+    print(country_names)
 
     # Interface for choosing countries with pagination. The program prints a list of countries
     # <Country code>, <Country name> devided into pages.
@@ -235,7 +238,7 @@ if inp == "-A" or inp == "-N" or inp == "":
     # User choose the country and put its CODE into input line.
 
     chosen_countries = []
-    c_codes = list(country_names.keys())
+    c_codes = sorted(list(country_names.keys()))
     per_page = 10  #items per page
     page_num = 0   #initial page number
     c_code = ""
@@ -424,7 +427,7 @@ city_weather = [(w['id'],
                  w['name'],
                  dt.fromtimestamp(w['dt']).isoformat(sep=" "),  #Converting epoch seconds to literal date
                  int(w['main']['temp']),
-                 ",".join([str(img['id']) for img in w['weather']])
+                 ";".join([str('{}, {}'.format(img['id'], img['icon'])) for img in w['weather']])
                  ) for w in weather['list']]
 
 #print(city_weather)
@@ -450,3 +453,5 @@ for w in city_weather:
 
 conn.commit()
 conn.close()
+
+print("Current weather data has been load to database")
